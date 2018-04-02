@@ -5,7 +5,7 @@ lateinit var filePath : String
 lateinit var srcFile : File
 lateinit var targetFilePath : String
 lateinit var outFile : File
-val dataQueue = LinkedBlockingQueue(8192)
+val dataQueue = LinkedBlockingQueue<KVP<Int,Any>>(8192)
 fun main(args: Array<String>) {
     if (args.isEmpty()){
         println(noSrcFile)
