@@ -1,11 +1,16 @@
-import java.io.File
+import java.io.*
+import java.nio.charset.Charset
 import java.util.concurrent.LinkedBlockingQueue
 
 lateinit var filePath : String
 lateinit var srcFile : File
 lateinit var targetFilePath : String
 lateinit var outFile : File
-val dataQueue = LinkedBlockingQueue<KVP<Int,Any>>(8192)
+val dataQueue = LinkedBlockingQueue<KVP>(8192)
+
+@Volatile
+var running = true
+
 fun main(args: Array<String>) {
     if (args.isEmpty()){
         println(noSrcFile)
@@ -28,5 +33,29 @@ fun main(args: Array<String>) {
 }
 
 fun initWorkThread(){
+    writeThread.start()
+    analyzerThread.start()
+}
 
+val analyzerThread = Thread {
+    srcFile.forEachLine(Charset.forName("UTF-8")){
+
+    }
+}
+
+val writeThread = Thread {
+    val writer = ObjectOutputStream(outFile.outputStream())
+    var count = 0
+    writer.writeInt(count)
+    while (running){
+        val kvp = dataQueue.take()
+        writer.writeObject(kvp)
+        count++
+    }
+    try {
+        writer.close()
+    }catch (e:IOException){
+        e.printStackTrace()
+        println("IO Stream close failed")
+    }
 }
