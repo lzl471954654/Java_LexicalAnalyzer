@@ -4,16 +4,20 @@ import java.util.concurrent.LinkedBlockingQueue
 /**
  * Key Value Pair
  * */
-data class KVP(private var key: Int = -1, private var value: Any? = null) : Serializable{
+data class KVP(private var key: Int = -1, private var value: Any) : Serializable{
 
-    public fun recycle() = Companion.recycle(this)
+    public fun recycle() = Pool.recycle(this)
 
-    public data class ConstStringDesc(val startPosition : Long, val fileSize : Long)
+    override fun toString(): String {
+        return "(${Type[key]}, $value)"
+    }
 
-    companion object {
+    public data class ConstStringDesc(val startPosition : Long, val fileSize : Long) : Serializable
+
+    companion object Pool : Serializable{
         private val pool = LinkedBlockingQueue<KVP>()
 
-        public fun obtainKVP(key: Int = -1,value: Any? = null):KVP{
+        public fun obtainKVP(key: Int = -1,value: Any):KVP{
             synchronized(pool){
                 return if (pool.isEmpty()){
                     KVP(key,value)
@@ -25,8 +29,10 @@ data class KVP(private var key: Int = -1, private var value: Any? = null) : Seri
 
         private fun recycle(kvp: KVP){
             kvp.key = -1
-            kvp.value = null
+            kvp.value = Unit
             pool.put(kvp)
         }
     }
+
+
 }
