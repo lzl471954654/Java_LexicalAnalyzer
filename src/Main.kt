@@ -12,6 +12,7 @@ val dataQueue = LinkedBlockingQueue<KVP>(8192)
 var running = true
 
 fun main(args: Array<String>) {
+    WordSet.initConfig(args)
     if ( args[0] == "-p"){
         printForm()
         return
